@@ -1,11 +1,38 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import "./App.css";
 
 function App() {
   const [length, setLength] = useState(8);
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
-  // const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
+
+  const generatePassword = useCallback(() => {
+    let pass = "";
+    let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    if (numberAllowed) str += "0123456789";
+    if (charAllowed) str += "!@#$%&*()_+^";
+
+    //loop to get random char until the size of length
+    for (let i = 1; i < length; i++) {
+      const index = Math.floor(Math.random() * str.length + 1);
+      pass += str.charAt(index);
+    }
+
+    setPassword(pass);
+  }, [length, numberAllowed, charAllowed]);
+
+  const passwordRef = useRef();
+
+  const copyPasswordToClipboard = () => {
+    window.navigator.clipboard.writeText(password);
+    passwordRef.current.select();
+  };
+
+  useEffect(() => {
+    generatePassword();
+  }, [length, numberAllowed, charAllowed]);
 
   return (
     <>
@@ -18,8 +45,12 @@ function App() {
             className="outline-none w-full py-1 px-3 bg-white text-gray-800"
             placeholder="Password"
             readOnly
+            ref={passwordRef}
           />
-          <button className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
+          <button
+            onClick={copyPasswordToClipboard}
+            className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0"
+          >
             copy
           </button>
         </div>
@@ -43,7 +74,7 @@ function App() {
             <input
               defaultChecked={numberAllowed}
               onChange={() => {
-                setCharAllowed((prev) => !prev);
+                setNumberAllowed((prev) => !prev);
               }}
               type="checkbox"
               name=""
