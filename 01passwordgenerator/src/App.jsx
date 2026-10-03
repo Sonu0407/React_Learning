@@ -14,7 +14,6 @@ function App() {
     if (numberAllowed) str += "0123456789";
     if (charAllowed) str += "!@#$%&*()_+^";
 
-    //loop to get random char until the size of length
     for (let i = 1; i < length; i++) {
       const index = Math.floor(Math.random() * str.length + 1);
       pass += str.charAt(index);
